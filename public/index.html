@@ -1,0 +1,149 @@
+<html>
+<head>
+	<title>Drawing Line Game</title>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="./js/jquery.js"></script>
+	<script src="./js/script.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+<body>
+	<div id="title">Draw Lines</div>
+	<div id="text" style="position:fixed"></div>
+	
+	<div id ="statusMsg"></div>
+	<div id="loading"><div id = "loadingStatus">Loading...</div>
+	<img src="./images/loading.gif"></img>
+	</div>
+	<div id="login" style="display:none;">
+		<input type="text" id="name" placeholder="Enter Your Name" /><br />
+		<button id="loginButton" onclick="login()">Play</button>
+	</div>
+	
+	<div id="list" style="display:none;width: 500px;margin:auto;">
+		<!--<button id="randomButton" onclick="getRandom()">Play a Random Game</button><br />-->
+		<button id="listButton" onclick="getList()">Get List Of Players</button><br />
+		<h2 style="color:black;font-family:'Comic Sans MS'">List Of Players Online:</h2>
+		<div id="playerList"></div>
+	</div>
+	
+	<table id="main" style="display:none">
+		<tr id="y0">
+			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x2" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x3" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x4" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x5" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x6" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x7" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x8" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x9" class="node"></div><div id="l" class="v"></div ></td>
+		</tr>
+		<tr id="y1">
+			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x2" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x3" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x4" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x5" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x6" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x7" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x8" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x9" class="node"><div id="l" class="v"></div ></td>
+		</tr>
+		<tr id="y2">
+			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x2" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x3" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x4" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x5" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x6" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x7" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x8" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x9" class="node"><div id="l" class="v"></div ></td>
+		</tr><tr id="y3">
+			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x2" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x3" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x4" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x5" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x6" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x7" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x8" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x9" class="node"><div id="l" class="v"></div ></td>
+		</tr>
+		<tr id="y4">
+			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x2" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x3" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x4" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x5" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x6" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x7" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x8" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x9" class="node"><div id="l" class="v"></div ></td>
+		</tr>
+		<tr id="y5">
+			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x2" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x3" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x4" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x5" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x6" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x7" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x8" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x9" class="node"><div id="l" class="v"></div ></td>
+		</tr><tr id="y6">
+			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x2" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x3" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x4" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x5" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x6" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x7" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x8" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x9" class="node"><div id="l" class="v"></div ></td>
+		</tr><tr id="y7">
+			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x2" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x3" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x4" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x5" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x6" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x7" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x8" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x9" class="node"><div id="l" class="v"></div ></td>
+		</tr><tr id="y8">
+			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x2" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x3" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x4" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x5" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x6" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x7" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x8" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
+			<td id ="x9" class="node"></div><div id="l" class="v"></div ></td>
+		</tr><tr id="y9">
+			<td id ="x0" class="node" ><div id="t" class="h"></div></div ></td>
+			<td id ="x1" class="node" ><div id="t" class="h"></div></div ></td>
+			<td id ="x2" class="node" ><div id="t" class="h"></div></div ></td>
+			<td id ="x3" class="node" ><div id="t" class="h"></div></div ></td>
+			<td id ="x4" class="node" ><div id="t" class="h"></div></div ></td>
+			<td id ="x5" class="node" ><div id="t" class="h"></div></div ></td>
+			<td id ="x6" class="node" ><div id="t" class="h"></div></div ></td>
+			<td id ="x7" class="node" ><div id="t" class="h"></div></div ></td>
+			<td id ="x8" class="node" ><div id="t" class="h"></div></div ></td>
+			<td id ="x9" class="node" ></div><div id="l" class="v"></div ></td>
+		</tr>
+	</table>
+
+	
+</body>
+</html>
