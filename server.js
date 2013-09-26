@@ -48,7 +48,7 @@ io.sockets.on('connection',function(socket){
 			games[id].me = data.me;
 			games[id].opp = data.opponent;
 			games[id].chance=true;
-			
+			games[id].set=1;
 			console.log("game Created:"+data.me+' '+data.opponent);
 			tosend.chance = true;
 			Sockets[data.me].emit('startgame',tosend);
@@ -79,5 +79,26 @@ io.sockets.on('connection',function(socket){
 			console.log('send:'+game.me);
 			game.chance = true;
 		}
+	});
+	socket.on('set',function(data){
+		
+		var game = games[data.id];
+		if(game.set == 2)
+		{	
+			game.set = 1;
+			if(game.me == data.name)
+			{	
+				game.chance = true;
+				Sockets[game.me].emit('set',data);
+			}
+			else
+			{
+				game.chance = false;
+				Sockets[game.opp].emit('set',data);
+			}
+		}
+		else
+			game.set = game.set+1;
+		console.log('set:'+data.name+game.set);
 	});
 });
