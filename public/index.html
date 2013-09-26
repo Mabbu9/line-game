@@ -26,7 +26,17 @@
 		<div id="playerList"></div>
 	</div>
 	
-	<table id="main" style="display:none">
+	<div id="game" style="display:none">
+	<div id="my">
+		<div></div>
+		<div></div>
+	</div>
+	<div id="opp">
+		<div></div>
+		<div></div>
+	</div>
+	<div id="turn"></div>
+	<table id="main">
 		<tr id="y0">
 			<td id ="x0" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
 			<td id ="x1" class="node" onmouseover="mouse($(this))"><div id="t" class="h"></div><div id="l" class="v"></div ><div id="label"></div></td>
@@ -143,7 +153,7 @@
 			<td id ="x9" class="node" ></div><div id="l" class="v"></div ></td>
 		</tr>
 	</table>
-
+	</div>
 	
 </body>
 </html>

@@ -1,5 +1,6 @@
 var name,opname,id,chance = false;
-var socket = io.connect('http://49.204.170.65:80');
+var score=0,opscore=0;
+var socket = io.connect('http://localhost:80');
  var logged = false;
 function closedisp(a,v,v1)
 {
@@ -12,6 +13,11 @@ function closedisp(a,v,v1)
 	if(!board[2*v+2][v1])//bottem
 		$($($(a).parent().parent().children("#y"+(v+1))[0]).children("#x"+(v1))[0]).children("#t")[0].style.display="none";
 }
+function update()
+{
+	$($('#my').children()[1]).text(score);
+	$($('#opp').children()[1]).text(opscore);
+}
 function check(x,y,flag)
 {
 	if(y%2==0)
@@ -20,16 +26,34 @@ function check(x,y,flag)
 		if(board[y-1][x] && board[y-2][x] && board[y-1][x+1])
 		{
 			if(flag)
-			$($($('#y'+(y/2-1)).children('#x'+(x))[0]).children("#label")[0]).text(name[0]);
+			{
+				$($($('#y'+(y/2-1)).children('#x'+(x))[0]).children("#label")[0]).text(name[0]);
+				score = score+1;
+				update();
+			}
 			else
-			$($($('#y'+(y/2-1)).children('#x'+(x))[0]).children("#label")[0]).text(opname[0]);
+			{
+				$($($('#y'+(y/2-1)).children('#x'+(x))[0]).children("#label")[0]).text(opname[0]);
+				$($($('#y'+(y/2-1)).children('#x'+(x))[0]).children("#label")[0])[0].style.color='red';
+				opscore = opscore+1;
+				update();
+			}
 		}
 		if(board[y+1][x] && board[y+2][x] && board[y+1][x+1])
 		{
 			if(flag)
-			$($($('#y'+(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(name[0]);
+			{	
+				$($($('#y'+(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(name[0]);
+				score = score+1;
+				update();
+			}
 			else
-			$($($('#y'+(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(opname[0]);
+			{
+				$($($('#y'+(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(opname[0]);
+				$($($('#y'+(y/2)).children('#x'+(x))[0]).children("#label")[0])[0].style.color='red';
+				opscore = opscore+1;
+				update();
+			}
 		}
 	}
 	else
@@ -37,16 +61,34 @@ function check(x,y,flag)
 		if(board[y][x-1] && board[y-1][x-1] && board[y+1][x-1])
 		{
 			if(flag)
-			$($($('#y'+Math.floor(y/2)).children('#x'+(x-1))[0]).children("#label")[0]).text(name[0]);
+			{
+				$($($('#y'+Math.floor(y/2)).children('#x'+(x-1))[0]).children("#label")[0]).text(name[0]);
+				score = score+1;
+				update();
+			}
 			else
-			$($($('#y'+Math.floor(y/2)).children('#x'+(x-1))[0]).children("#label")[0]).text(opname[0]);
+			{
+				$($($('#y'+Math.floor(y/2)).children('#x'+(x-1))[0]).children("#label")[0]).text(opname[0]);
+				$($($('#y'+Math.floor(y/2)).children('#x'+(x-1))[0]).children("#label")[0])[0].style.color='red';
+				opscore = opscore+1;
+				update();
+			}
 		}
 		if(board[y][x+1] && board[y-1][x] && board[y+1][x])
 		{
 			if(flag)
-			$($($('#y'+Math.floor(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(name[0]);
+			{
+				$($($('#y'+Math.floor(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(name[0]);
+				score = score+1;
+				update();
+			}
 			else
-			$($($('#y'+Math.floor(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(opname[0]);
+			{
+				$($($('#y'+Math.floor(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(opname[0]);
+				$($($('#y'+Math.floor(y/2)).children('#x'+(x))[0]).children("#label")[0])[0].style.color='red';
+				opscore = opscore+1;
+				update();
+			}
 		}
 	}
 }
@@ -55,7 +97,8 @@ function mouse(a)
 	var tosend={};
 	$(a).click(function(e){
 		if(chance)
-		{
+		{	
+			$('#turn').text('');
 			var v = eval($(this).parent().attr("id")[1]);
 			var v1 = eval($(this).attr("id")[1]);
 			var offset = $(a).offset();
@@ -177,7 +220,7 @@ $(document).ready(function(){
 		console.log('Connected');
 		$('#loading')[0].style.display = 'none';
 		$('#login')[0].style.display = 'block';
-		$('#main')[0].style.display = 'none';
+		$('#game')[0].style.display = 'none';
 		console.log('login div visible');
 	});
 function login()
@@ -256,15 +299,22 @@ socket.on('play',function(data)
 });
 socket.on('startgame',function(data){
 	$('#loading')[0].style.display = 'none';
-	$('#main')[0].style.display = 'block';
+	$('#game')[0].style.display = 'block';
+	$($('#my').children()[0]).text(name);
+	$($('#opp').children()[0]).text(opname);
 	console.log(data);
 	id = data.id;
 	chance = data.chance;
+	if(chance)
+	{	
+		$('#turn').text('Its your Turn');
+	}
 });
 socket.on('action',function(data){
 	console.log('action:'+data);
 	board[data.y][data.x]=true;
 	chance=true;
+	$('#turn').text('Its your Turn');
 	if(data.y%2==0)
 	{
 		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.display="block";

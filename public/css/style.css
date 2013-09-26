@@ -39,7 +39,7 @@ body
 {
 	margin:auto;
 	border-spacing: 0px;
-	margin-top: 80px;
+	margin-top: 30px;
 	padding-left: 54px;
 	
 }
@@ -86,4 +86,37 @@ body
 	width: 15px;
 	margin-left: 25px;
 	margin-top: 15px;
+}
+#my
+{
+	width: 300px;
+	height: 500px;
+	float: left;
+	padding: 20px;
+	text-align: center;
+	font-size: 35px;
+	font-family: comic san;
+	color: black;
+}
+#opp
+{
+	width: 300px;
+	height: 500px;
+	float: right;
+	padding: 20px;
+	text-align: center;
+	font-size: 35px;
+	font-family: comic san;
+	color: red;
+}
+#turn
+{
+	width: 300px;
+	height: 30px;
+	margin: auto;
+	font-size: 28px;
+	text-align: center;
+	color: rgb(16, 73, 255);
+	margin-top: 17px;
+}
 }
