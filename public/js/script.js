@@ -1,6 +1,6 @@
 var name,opname,id,chance = false;
 var score=0,opscore=0;
-var socket = io.connect('http://49.204.184.11:80');
+var socket = io.connect(window.location.hostname);
  var logged = false;
 function closedisp(a,v,v1)
 {

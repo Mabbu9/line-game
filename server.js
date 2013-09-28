@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
-var serverPort = (process.env.OPENSHIFT_INTERNAL_PORT || 80);
-var host = (process.env.OPENSHIFT_INTERNAL_IP || '0.0.0.0');
+var serverPort = 80;
+var host = '0.0.0.0';
 var crypto = require('crypto');
 app.configure(function(){
 	app.use('/',express.static(__dirname+'/public'));
