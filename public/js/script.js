@@ -15,16 +15,32 @@ function closedisp(a,v,v1)
 }
 function update()
 {
-	$($('#my').children()[1]).text(score);
-	$($('#opp').children()[1]).text(opscore);
-	var tosend = {};
-	tosend.id = id;
-	if(chance)
-		tosend.name = opname;
+	if(score+opscore == 81 && score>opscore)
+	{	
+		$('#game')[0].style.display = 'none';
+		$('#win')[0].style.display = 'block';
+		score=opscore=0;
+		socket.emit('win');
+	}
+	else if(score+opscore == 81 && score<opscore)
+	{
+		$('#game')[0].style.display = 'none';
+		$('#loose')[0].style.display = 'block';	
+		score=opscore=0;
+	}
 	else
-		tosend.name = name;
-	chance = false;
-	socket.emit('set',tosend);
+	{
+		$($('#my').children()[1]).text(score);
+		$($('#opp').children()[1]).text(opscore);
+		var tosend = {};
+		tosend.id = id;
+		if(chance)
+			tosend.name = opname;
+		else
+			tosend.name = name;
+		chance = false;
+		socket.emit('set',tosend);
+	}
 }
 function check(x,y,flag)
 {
@@ -329,10 +345,18 @@ socket.on('action',function(data){
 	if(data.y%2==0)
 	{
 		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.display="block";
+		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.opacity="1";
+		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.background="red";
+		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.transition="2s";
+		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.background="black";
 	}
 	else
 	{
 		$($('#y'+(Math.floor(data.y/2))).children('#x'+data.x)[0]).children("#l")[0].style.display="block";
+		$($('#y'+(Math.floor(data.y/2))).children('#x'+data.x)[0]).children("#l")[0].style.opacity="1";
+		$($('#y'+(Math.floor(data.y/2))).children('#x'+data.x)[0]).children("#l")[0].style.background="red";
+		$($('#y'+(Math.floor(data.y/2))).children('#x'+data.x)[0]).children("#l")[0].style.transition="2s";
+		$($('#y'+(Math.floor(data.y/2))).children('#x'+data.x)[0]).children("#l")[0].style.background="black";
 	}
 	check(data.x,data.y,!chance);
 	if(chance)
@@ -342,4 +366,13 @@ socket.on('action',function(data){
 socket.on('set',function(data){
 	chance = true;
 	$('#turn').text('Its your Turn');
+});
+socket.on('set',function(data){
+	chance = true;
+	$('#turn').text('Its your Turn');
+});
+socket.on('error',function(data){
+	$('#game')[0].style.display='none';
+	$('#error')[0].style.display='block';
+	$('#error').text(data);
 });

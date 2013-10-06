@@ -8,7 +8,7 @@ app.configure(function(){
 	
 });
 var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(server,{log:false});
 server.listen(serverPort, host);
 console.log('Server running at http://'+host+':'+serverPort);
 var Sockets = {};
@@ -100,5 +100,21 @@ io.sockets.on('connection',function(socket){
 		else
 			game.set = game.set+1;
 		console.log('set:'+data.name+game.set);
+	});
+	socket.on('disconnect',function(){
+		console.log('disconnected');
+		for(var id in games)
+		{
+			if(Sockets[games[id].me] == socket)
+			{
+				Sockets[games[id].opp].emit("error","connection lost with "+games[id].me);
+				delete games.id;
+			}
+			else if(Sockets[games[id].opp] == socket)
+			{
+				Sockets[games[id].me].emit("error","connection lost with "+games[id].opp);
+				delete games.id;
+			}
+		}
 	});
 });

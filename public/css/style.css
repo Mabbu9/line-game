@@ -119,4 +119,10 @@ body
 	color: rgb(16, 73, 255);
 	margin-top: 17px;
 }
+.disp
+{
+	display: block;
+	width: 150px;
+	margin: auto;
+	margin-top: 200px;
 }
