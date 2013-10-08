@@ -10,99 +10,68 @@ function closedisp(a,v,v1)
 		$(a).children("#l")[0].style.display="none"
 	if(!board[2*v+1][v1+1])//right
 		$($(a).parent().children("#x"+(eval($(a).attr("id")[1])+1))[0]).children("#l")[0].style.display="none";
-	if(!board[2*v+2][v1])//bottem
+	if(!board[2*v+2][v1])//bottom
 		$($($(a).parent().parent().children("#y"+(v+1))[0]).children("#x"+(v1))[0]).children("#t")[0].style.display="none";
 }
 function update()
 {
-	$($('#my').children()[1]).text(score);
-	$($('#opp').children()[1]).text(opscore);
-	var tosend = {};
-	tosend.id = id;
-	if(chance)
-		tosend.name = opname;
+	if(score+opscore == 81 && score>opscore)
+	{	
+		$('#game')[0].style.display = 'none';
+		$('#win')[0].style.display = 'block';
+		score=opscore=0;
+		socket.emit('win');
+	}
+	else if(score+opscore == 81 && score<opscore)
+	{
+		$('#game')[0].style.display = 'none';
+		$('#loose')[0].style.display = 'block';	
+		score=opscore=0;
+	}
 	else
-		tosend.name = name;
-	chance = false;
-	socket.emit('set',tosend);
+	{
+		$($('#my').children()[1]).text(score);
+		$($('#opp').children()[1]).text(opscore);
+	}
 }
-function check(x,y,flag)
+function set(point)
 {
-	var cflag = false;
-	if(y%2==0)
+	var text;
+	if(chance)
 	{
-		
-		if( y>0 && board[y-1][x] && board[y-2][x] && board[y-1][x+1] )
-		{
-			if(flag)
-			{
-				$($($('#y'+(y/2-1)).children('#x'+(x))[0]).children("#label")[0]).text(name[0]);
-				score = score+1;
-				cflag = true;
-			}
-			else
-			{
-				$($($('#y'+(y/2-1)).children('#x'+(x))[0]).children("#label")[0]).text(opname[0]);
-				$($($('#y'+(y/2-1)).children('#x'+(x))[0]).children("#label")[0])[0].style.color='red';
-				opscore = opscore+1;
-				cflag = true;
-			}
-		}
-		if(y<18 && board[y+1][x] && board[y+2][x] && board[y+1][x+1])
-		{
-			if(flag)
-			{	
-				$($($('#y'+(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(name[0]);
-				score = score+1;
-				cflag = true;
-			}
-			else
-			{
-				$($($('#y'+(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(opname[0]);
-				$($($('#y'+(y/2)).children('#x'+(x))[0]).children("#label")[0])[0].style.color='red';
-				opscore = opscore+1;
-				cflag = true;
-			}
-		}
+		text = name[0];
+		score = score + point.count;
 	}
 	else
 	{
-		if(x>0 && board[y][x-1] && board[y-1][x-1] && board[y+1][x-1] )
-		{
-			if(flag)
-			{
-				$($($('#y'+Math.floor(y/2)).children('#x'+(x-1))[0]).children("#label")[0]).text(name[0]);
-				score = score+1;
-				cflag = true;
-			}
-			else
-			{
-				$($($('#y'+Math.floor(y/2)).children('#x'+(x-1))[0]).children("#label")[0]).text(opname[0]);
-				$($($('#y'+Math.floor(y/2)).children('#x'+(x-1))[0]).children("#label")[0])[0].style.color='red';
-				opscore = opscore+1;
-				cflag = true;
-			}
-		}
-		if(x<10 && board[y][x+1] && board[y-1][x] && board[y+1][x])
-		{
-			if(flag)
-			{
-				$($($('#y'+Math.floor(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(name[0]);
-				score = score+1;
-				update();
-			}
-			else
-			{
-				$($($('#y'+Math.floor(y/2)).children('#x'+(x))[0]).children("#label")[0]).text(opname[0]);
-				$($($('#y'+Math.floor(y/2)).children('#x'+(x))[0]).children("#label")[0])[0].style.color='red';
-				opscore = opscore+1;
-				cflag = true;
-			}
-		}
+		text = opname[0];
+		opscore = opscore + point.count;
 	}
-	if(cflag)
+	$($($('#y'+point.y).children('#x'+point.x)[0]).children("#label")[0]).text(text);
+	if(chance == false)
+	{
+		$($($('#y'+point.y).children('#x'+point.x)[0]).children("#label")[0])[0].style.color='red';
+	}
+	update();
+	if(point.count == 2)
+	{
+		if(point.hor)
+		{
+			point.x = point.x-1;
+		}
+		else
+		{
+			point.y = point.y-1;
+		}
+		$($($('#y'+point.y).children('#x'+point.x)[0]).children("#label")[0]).text(text);
+		if(chance == false)
+		{
+			$($($('#y'+point.y).children('#x'+point.x)[0]).children("#label")[0])[0].style.color='red';
+		}
 		update();
+	}
 }
+
 function mouse(a)
 {
 	var tosend={};
@@ -124,9 +93,6 @@ function mouse(a)
 			{
 				chance=false;
 				q = "left";
-				$(this).children("#l")[0].style.display="block";
-				$(this).children("#l")[0].style.opacity="1";
-				board[2*v+1][v1]=true;
 				tosend.x = v1;
 				tosend.y = 2*v+1;
 				socket.emit('action',tosend);
@@ -135,9 +101,6 @@ function mouse(a)
 			{
 				chance=false;
 				q = "bottem";
-				board[2*v+2][v1]=true;
-				$($($(this).parent().parent().children("#y"+(v+1))[0]).children("#x"+(v1))[0]).children("#t")[0].style.display="block";
-				$($($(this).parent().parent().children("#y"+(v+1))[0]).children("#x"+(v1))[0]).children("#t")[0].style.opacity="1";
 				tosend.x = v1;
 				tosend.y = 2*v+2;
 				socket.emit('action',tosend);
@@ -145,9 +108,6 @@ function mouse(a)
 			else if(x>y && y>maxy-x && !board[2*v+1][v1+1])
 			{
 				chance=false;
-				board[2*v+1][v1+1]=true;
-				$($(this).parent().children("#x"+(eval($(this).attr("id")[1])+1))[0]).children("#l")[0].style.display="block";
-				$($(this).parent().children("#x"+(eval($(this).attr("id")[1])+1))[0]).children("#l")[0].style.opacity="1";
 				q = "right";
 				tosend.x = v1+1;
 				tosend.y = 2*v+1;
@@ -157,18 +117,11 @@ function mouse(a)
 			{
 				chance=false;
 				q = "top";
-				$(this).children("#t")[0].style.display="block";
-				$(this).children("#t")[0].style.opacity="1";
-				board[2*v][v1]=true;
 				tosend.x = v1;
 				tosend.y = 2*v;
 				socket.emit('action',tosend);
 			}
-			
-			check(tosend.x,tosend.y,!chance);
-			
 			$("#text").text("X:"+x+"Y:"+y+"  "+q);
-			
 		}
 	});
 		$(a).mousemove(function(e){
@@ -324,22 +277,28 @@ socket.on('startgame',function(data){
 socket.on('action',function(data){
 	console.log('action:'+data);
 	board[data.y][data.x]=true;
-	chance=true;
-	//$('#turn').text('Its your Turn');
+	chance=data.chance;
+	if(chance)
+	$('#turn').text('Its your Turn');
 	if(data.y%2==0)
 	{
 		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.display="block";
+		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.opacity="1";
+		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.transition="2s";
+		$($('#y'+(data.y/2)).children('#x'+data.x)[0]).children("#t")[0].style.background="black";
 	}
 	else
 	{
 		$($('#y'+(Math.floor(data.y/2))).children('#x'+data.x)[0]).children("#l")[0].style.display="block";
+		$($('#y'+(Math.floor(data.y/2))).children('#x'+data.x)[0]).children("#l")[0].style.opacity="1";
+		$($('#y'+(Math.floor(data.y/2))).children('#x'+data.x)[0]).children("#l")[0].style.transition="2s";
+		$($('#y'+(Math.floor(data.y/2))).children('#x'+data.x)[0]).children("#l")[0].style.background="black";
 	}
-	check(data.x,data.y,!chance);
-	if(chance)
-	$('#turn').text('Its your Turn');
-	
+	if(data.point.x != undefined )
+		set(data.point);
 });
-socket.on('set',function(data){
-	chance = true;
-	$('#turn').text('Its your Turn');
+socket.on('error',function(data){
+	$('#game')[0].style.display='none';
+	$('#error')[0].style.display='block';
+	$('#error').text(data);
 });
