@@ -1,8 +1,56 @@
 var express = require('express');
 var app = express();
-var serverPort = 80;
+var serverPort = 8000;
 var host = '0.0.0.0';
 var crypto = require('crypto');
+function check(x,y,board)
+{
+	x = eval(x);
+	y = eval(y);
+	var point = {};
+	if(y%2==0)
+	{
+		point.count = 0;
+		point.hor = false;
+		if( y>0 && board[y-1][x] && board[y-2][x] && board[y-1][x+1] )
+		{
+			point.y = y/2-1;
+			point.x = x;
+			point.count = point.count + 1;
+			//score = score+1;	
+		}
+		if(y<18 && board[y+1][x] && board[y+2][x] && board[y+1][x+1])
+		{
+			point.y = y/2;
+			point.x = x;
+			point.count = point.count + 1;
+			//score = score+1;
+			
+		}
+	}
+	else
+	{
+		point.count = 0;
+		point.hor = true;
+		if(x>0 && board[y][x-1] && board[y-1][x-1] && board[y+1][x-1] )
+		{
+			point.y = Math.floor(y/2);
+			point.x = x-1;
+			point.count = point.count + 1;
+			//score = score+1;
+			
+		}
+		if(x<10 && board[y][x+1] && board[y-1][x] && board[y+1][x])
+		{
+			point.y = Math.floor(y/2);
+			point.x = x;
+			point.count = point.count + 1;
+			//score = score+1;
+		}
+	}
+	return point;
+}
+
 app.configure(function(){
 	app.use('/',express.static(__dirname+'/public'));
 	
@@ -49,6 +97,11 @@ io.sockets.on('connection',function(socket){
 			games[id].opp = data.opponent;
 			games[id].chance=true;
 			games[id].set=1;
+			games[id].board=[];
+			for(i=0;i<20;i++)
+			{
+				games[id].board.push([false,false,false,false,false,false,false,false,false,false]);
+			}
 			console.log("game Created:"+data.me+' '+data.opponent);
 			tosend.chance = true;
 			Sockets[data.me].emit('startgame',tosend);
@@ -66,54 +119,77 @@ io.sockets.on('connection',function(socket){
 		
 		var game = games[data.id];
 		console.log('action:'+data.me+game.me+game.opp+game.chance);
+		
 		if(game.me == data.me && game.chance)
 		{	
-			Sockets[game.opp].emit('action',data);
-			console.log('send:'+game.opp);
-			game.chance = false;
-		}
-		else if(game.opp == data.me && !game.chance)
-		{
-			
-			Sockets[game.me].emit('action',data);
-			console.log('send:'+game.me);
-			game.chance = true;
-		}
-	});
-	socket.on('set',function(data){
-		
-		var game = games[data.id];
-		if(game.set == 2)
-		{	
-			game.set = 1;
-			if(game.me == data.name)
+			var point = check(data.x,data.y,game.board);
+			if(point.x == undefined)
 			{	
-				game.chance = true;
-				Sockets[game.me].emit('set',data);
+				data.chance = true;
+				game.chance = false;
 			}
 			else
 			{
-				game.chance = false;
-				Sockets[game.opp].emit('set',data);
+				data.chance = false;
+				game.chance = true;
 			}
+			data.point = point;
+			Sockets[game.opp].emit('action',data);
+			data.chance = !data.chance;
+			socket.emit('action',data);
+			console.log('send:'+game.opp);
+			game.board[data.y][data.x]=true;
 		}
-		else
-			game.set = game.set+1;
-		console.log('set:'+data.name+game.set);
+		else if(game.opp == data.me && !game.chance)
+		{
+
+			var point = check(data.x,data.y,game.board);
+			if(point.x == undefined)
+			{	
+				data.chance = true;
+				game.chance = true;
+			}
+			else
+			{
+				data.chance = false;
+				game.chance = false;
+			}
+			data.point = point;
+			Sockets[game.me].emit('action',data);
+			data.chance = !data.chance;
+			console.log('send:'+game.me);
+			socket.emit('action',data);
+			game.board[data.y][data.x]=true;
+		
+		}
 	});
+	
 	socket.on('disconnect',function(){
 		console.log('disconnected');
+		
 		for(var id in games)
 		{
+			
 			if(Sockets[games[id].me] == socket)
 			{
 				Sockets[games[id].opp].emit("error","connection lost with "+games[id].me);
-				delete games.id;
+				delete Sockets[games[id].me];
+				delete games[id];
 			}
 			else if(Sockets[games[id].opp] == socket)
 			{
 				Sockets[games[id].me].emit("error","connection lost with "+games[id].opp);
-				delete games.id;
+				delete Sockets[games[id].opp];
+				delete games[id];
+			}
+		}
+		for(var cli in Sockets)
+		{
+			if(Sockets[cli] == socket)
+			{
+				delete Sockets[cli];
+				List.pop(cli);
+				
 			}
 		}
 	});
