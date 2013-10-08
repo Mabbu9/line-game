@@ -1,13 +1,9 @@
 var express = require('express');
 var app = express();
-<<<<<<< HEAD
 if(process.argv[2]!=null)
 	var serverPort = parseInt(process.argv[2]);
 else
 	var serverPort = 8000;
-=======
-var serverPort = 8000;
->>>>>>> d11332d8c463115255f36377099109d55d466eea
 var host = '0.0.0.0';
 var crypto = require('crypto');
 function check(x,y,board)
