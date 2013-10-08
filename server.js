@@ -1,6 +1,9 @@
 var express = require('express');
 var app = express();
-var serverPort = 80;
+if(process.argv[2]!=null)
+	var serverPort = parseInt(process.argv[2]);
+else
+	var serverPort = 8000;
 var host = '0.0.0.0';
 var crypto = require('crypto');
 app.configure(function(){
